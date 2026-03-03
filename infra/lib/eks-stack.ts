@@ -9,22 +9,30 @@ import * as kubectl from '@aws-cdk/lambda-layer-kubectl-v29';
 interface EksStackProps extends cdk.StackProps {
   vpc: ec2.Vpc;
   repository: ecr.Repository;
+  clusterName?: string; // from context/env
 }
 
 export class EksStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: EksStackProps) {
     super(scope, id, props);
 
+    const clusterName =
+      props.clusterName ||
+      this.node.tryGetContext('clusterName') ||
+      process.env.EKS_CLUSTER_NAME ||
+      'my-eks-cluster';
+
     const cluster = new eks.Cluster(this, 'EksCluster', {
-    version: eks.KubernetesVersion.V1_29,
-    vpc: props.vpc,
-    vpcSubnets: [
+      clusterName,
+      version: eks.KubernetesVersion.V1_29,
+      vpc: props.vpc,
+      vpcSubnets: [
         {
-        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
         },
-    ],
-    defaultCapacity: 0,
-    kubectlLayer: new kubectl.KubectlV29Layer(this, 'KubectlLayer'),
+      ],
+      defaultCapacity: 0,
+      kubectlLayer: new kubectl.KubectlV29Layer(this, 'KubectlLayer'),
     });
 
     const nodeRole = new iam.Role(this, 'EksNodeRole', {
@@ -32,21 +40,15 @@ export class EksStack extends cdk.Stack {
     });
 
     nodeRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName(
-        'AmazonEKSWorkerNodePolicy'
-      )
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy')
     );
-
     nodeRole.addManagedPolicy(
       iam.ManagedPolicy.fromAwsManagedPolicyName(
         'AmazonEC2ContainerRegistryReadOnly'
       )
     );
-
     nodeRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName(
-        'AmazonEKS_CNI_Policy'
-      )
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy')
     );
 
     cluster.addNodegroupCapacity('ManagedNodeGroup', {
