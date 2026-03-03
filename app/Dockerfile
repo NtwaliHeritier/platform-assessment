@@ -35,7 +35,7 @@ RUN npm ci --only=production
 # Change to non-root user
 USER appuser
 
-# Set environment variables (optional)
+# Set environment variables
 ENV NODE_ENV=production
 ENV PORT=3000
 
