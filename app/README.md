@@ -23,9 +23,9 @@ docker push localhost:5000/node_app:$GIT_SHA
 - Check for the image on the local registry
 Type 
 ```bash
-curl http://localhost:5000/v2/_catalog
+curl http://localhost:5000/v2/node_app/tags/list
 ```
 You should see something like:
 ```bash
-{"repositories":["node_app"]}
+{"name":"node_app","tags":["47121b1"]}
 ```
