@@ -27,5 +27,5 @@ curl http://localhost:5000/v2/node_app/tags/list
 ```
 You should see something like:
 ```bash
-{"name":"node_app","tags":["47121b1"]}
+{"name":"node_app","tags":["<GIT_SHA>"]}
 ```
