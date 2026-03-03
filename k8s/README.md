@@ -2,7 +2,7 @@
 
 ## How to run the app
 1. Get short Git SHA
-- To get the image name
+- To get the image names and get the latest image
 ```bash
 docker images | grep node_app
 ```
@@ -12,9 +12,9 @@ export IMAGE=<IMAGE_NAME>
 ```
 - Run the following three steps
 ```bash
-envsubst < k8s/app/deployment.yaml | kubectl apply -f -
-kubectl apply -f k8s/app/service.yaml
-kubectl apply -f k8s/app/service.yaml
+envsubst < deployment.yaml | kubectl apply -f -
+kubectl apply -f service.yaml
+kubectl apply -f ingress.yaml
 ```
 - Forward traffic to the k8s service
 ```bash
