@@ -24,3 +24,18 @@ kubectl port-forward svc/node-app 3000:3000
 ```bash
 curl http://localhost:3000/health
 ```
+
+## Monitoring
+
+### Prometheus
+1. Upgrade helm release
+```bash
+helm upgrade monitoring prometheus-community/kube-prometheus-stack \
+  -f monitoring/prometheus-values.yaml \
+  -n monitoring
+```
+2. Verify Prometheus Sees Your App
+```bash
+kubectl port-forward svc/monitoring-kube-prometheus-prometheus 9090 -n monitoring
+```
+and open localhost:9090
