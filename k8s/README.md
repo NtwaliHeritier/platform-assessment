@@ -27,20 +27,27 @@ curl http://localhost:3000/health
 
 ## Monitoring
 
-1. Run the following
+1. Create grafana username and password as secrets
+```bash
+kubectl create secret generic grafana-admin-credentials \
+  --from-literal=admin-user="<username_you_want_to_use>" \
+  --from-literal=admin-password="<password_you_want_to_use>" \
+  -n monitoring
+```
+2. Run the following
 ```bash
 helm install monitoring prometheus-community/kube-prometheus-stack \
   -f monitoring/prometheus-values.yaml \
   -f monitoring/grafana-values.yaml \
   -n monitoring --create-namespace
 ```
-2. Verify Prometheus Sees Your App
+3. Verify Prometheus Sees Your App
 ```bash
 kubectl port-forward svc/monitoring-kube-prometheus-prometheus 9090 -n monitoring
 ```
 Visit localhost:9090
-3. Access grafana
+4. Access grafana
 ```bash
 kubectl port-forward svc/monitoring-grafana 3001:80 -n monitoring
 ```
-Visit localhost:3000, the credentials are username: admin, password: prom-operator
+Visit localhost:3000, the credentials are the username and password you specified.
