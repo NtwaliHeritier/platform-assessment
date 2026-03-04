@@ -43,9 +43,9 @@ jobs:
           IMAGE_NAME=node_app
           SHA=${GITHUB_SHA::7}
           # Create deployment if it doesn't exist
-          if ! kubectl get deployment node_app; then
-            kubectl create deployment node_app --image=${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$SHA
+          if ! kubectl get deployment node-app; then
+            kubectl create deployment node-app --image=${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$SHA
           else
-            kubectl set image deployment/node_app node_app=${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$SHA
+            kubectl set image deployment/node-app node-app=${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$SHA
           fi
-          kubectl rollout status deployment/node_app
+          kubectl rollout status deployment/node-app
