@@ -39,6 +39,7 @@ This project can be synthesized and tested entirely locally. To get started:
 ```bash
 cdk synth
 ```
+- You can check the output templates in cdk.out
 - To run unit tests:
 ```bash
 npm test
