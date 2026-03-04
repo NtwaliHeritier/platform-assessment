@@ -27,15 +27,20 @@ curl http://localhost:3000/health
 
 ## Monitoring
 
-### Prometheus
-1. Upgrade helm release
+1. Run the following
 ```bash
-helm upgrade monitoring prometheus-community/kube-prometheus-stack \
+helm install monitoring prometheus-community/kube-prometheus-stack \
   -f monitoring/prometheus-values.yaml \
-  -n monitoring
+  -f monitoring/grafana-values.yaml \
+  -n monitoring --create-namespace
 ```
 2. Verify Prometheus Sees Your App
 ```bash
 kubectl port-forward svc/monitoring-kube-prometheus-prometheus 9090 -n monitoring
 ```
-and open localhost:9090
+Visit localhost:9090
+3. Access grafana
+```bash
+kubectl port-forward svc/monitoring-grafana 3001:80 -n monitoring
+```
+Visit localhost:3000, the credentials are username: admin, password: prom-operator
