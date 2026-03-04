@@ -1,0 +1,51 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 1. Install kind & kubectl
+      - name: Install kind
+        run: |
+          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.25.0/kind-linux-amd64
+          chmod +x ./kind
+          sudo mv ./kind /usr/local/bin/kind
+
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+
+      # 2. Create kind cluster
+      - name: Create kind cluster
+        run: kind create cluster --name platform-cluster
+
+      # 3. DockerHub login (so kind can pull)
+      - name: DockerHub login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 4. Deploy using kubectl
+      - name: Deploy to kind
+        run: |
+          IMAGE_NAME=node_app
+          SHA=${GITHUB_SHA::7}
+          # Create deployment if it doesn't exist
+          if ! kubectl get deployment node_app; then
+            kubectl create deployment node_app --image=${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$SHA
+          else
+            kubectl set image deployment/node_app node_app=${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$SHA
+          fi
+          kubectl rollout status deployment/node_app
