@@ -34,20 +34,35 @@ kubectl create secret generic grafana-admin-credentials \
   --from-literal=admin-password="<password_you_want_to_use>" \
   -n monitoring
 ```
-2. Run the following
+2. Install Prometheus + Grafana (Helm)
 ```bash
 helm install monitoring prometheus-community/kube-prometheus-stack \
   -f monitoring/prometheus-values.yaml \
   -f monitoring/grafana-values.yaml \
   -n monitoring --create-namespace
 ```
-3. Verify Prometheus Sees Your App
+3. Run Loki (Docker)
+```bash
+docker run -d --name loki -p 3100:3100 grafana/loki:3.6.5
+```
+and verify that it is running
+```bash
+curl http://localhost:3100/ready
+```
+it should return ready
+4. Install Promtail(Helm) to ship logs to loki
+```bash
+helm install promtail grafana/promtail \
+  -n monitoring \
+  --set config.clients[0].url=http://host.docker.internal:3100/loki/api/v1/push
+```
+5. Verify Prometheus Sees Your App
 ```bash
 kubectl port-forward svc/monitoring-kube-prometheus-prometheus 9090 -n monitoring
 ```
 Visit localhost:9090
-4. Access grafana
+6. Access grafana
 ```bash
 kubectl port-forward svc/monitoring-grafana 3001:80 -n monitoring
 ```
-Visit localhost:3000, the credentials are the username and password you specified.
+Visit localhost:3001, the credentials are the username and password you specified.
