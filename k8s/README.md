@@ -1,4 +1,4 @@
-# Welcome to your k8s project
+# K8S
 
 ## How to run the app
 1. Get short Git SHA
@@ -12,9 +12,9 @@ export IMAGE=<IMAGE_NAME>
 ```
 - Run the following three steps
 ```bash
-envsubst < deployment.yaml | kubectl apply -f -
-kubectl apply -f service.yaml
-kubectl apply -f ingress.yaml
+envsubst < app/deployment.yaml | kubectl apply -f -
+kubectl apply -f app/service.yaml
+kubectl apply -f app/ingress.yaml
 ```
 - Forward traffic to the k8s service
 ```bash

@@ -1,8 +1,9 @@
-# Welcome to your CDK TypeScript project
+# CDK
 
 ## Prerequisites & CDK Bootstrap (Local Setup)
 
-This project can be synthesized and tested entirely locally. To get started:
+This project can be synthesized and tested entirely locally. 
+To get started:
 
 ### Prerequisites
 
