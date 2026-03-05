@@ -1,15 +1,17 @@
 all:
   vars:
     ansible_user: ubuntu
+    ansible_port: 2222
     ansible_ssh_private_key_file: ~/.ssh/id_rsa
+
   hosts:
-    local-vm:
-      host_ip: "{{ lookup('env','MULTIPASS_IP') }}"
+    docker-target:
+      ansible_host: 127.0.0.1
 
 webservers:
   hosts:
-    local-vm: {}
-    
+    docker-target:
+
 monitoring:
   hosts:
-    local-vm: {}
+    docker-target:
