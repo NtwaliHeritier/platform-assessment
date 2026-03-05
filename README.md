@@ -1,0 +1,1 @@
+Install kubectl, kind, helm, ansible
