@@ -17,3 +17,10 @@ grafana:
       enabled: true
     datasources:
       enabled: true
+
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      access: proxy
+      url: http://host.docker.internal:3100
+      isDefault: false
