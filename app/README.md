@@ -18,6 +18,8 @@ To run the app, run the following commands:
 npm run build
 npm run start
 ```
+After checking, stop the app, since kubernetes will be in charge of starting the image
+
 To run the test
 ```bash
 npm test
