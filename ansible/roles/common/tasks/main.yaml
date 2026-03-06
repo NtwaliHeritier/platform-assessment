@@ -1,47 +1,69 @@
 - name: Ensure sudo is installed
-  apt:
+  ansible.builtin.apt:
     name: sudo
     state: present
     update_cache: yes
 
 - name: Create deploy user
-  user:
+  ansible.builtin.user:
     name: deploy
-    comment: "Non-root deploy user"
+    comment: Non-root deploy user
     shell: /bin/bash
     groups: sudo
+    append: true
     create_home: yes
 
 - name: Disable root SSH login
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: '^PermitRootLogin'
     line: 'PermitRootLogin no'
   notify: restart ssh
 
-- name: Configure UFW default policies
-  ufw:
-    state: enabled
-    policy: deny
-    direction: incoming
+- name: Install firewall packages
+  ansible.builtin.apt:
+    name:
+      - ufw
+      - iptables
+    state: present
 
-- name: Allow SSH
-  ufw:
+- name: Set default incoming firewall policy
+  community.general.ufw:
+    direction: incoming
+    policy: deny
+
+- name: Set default outgoing firewall policy
+  community.general.ufw:
+    direction: outgoing
+    policy: allow
+
+- name: Allow SSH through firewall
+  community.general.ufw:
     rule: allow
     name: OpenSSH
 
-- name: Set timezone
-  timezone:
-    name: UTC
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+
+- name: Ensure tzdata is installed (timezone database)
+  ansible.builtin.apt:
+    name: tzdata
+    state: present
+    update_cache: yes
+
+- name: Set timezone to Etc/UTC
+  community.general.timezone:
+    name: Etc/UTC
 
 - name: Set system limits
-  copy:
+  ansible.builtin.copy:
     dest: /etc/security/limits.d/99-custom.conf
     content: |
       * soft nofile 65535
       * hard nofile 65535
 
-- name: Ensure unattended-upgrades installed
-  apt:
+- name: Ensure unattended upgrades installed
+  ansible.builtin.apt:
     name: unattended-upgrades
     state: present
