@@ -32,6 +32,8 @@ You should run all the steps while the terminal is in k8s folder. i.e: `cd k8s`
 You should run all the steps while the terminal is in app folder. i.e: `cd infra`
 4. Check the readme file of the ansible folder, at the end ansible will run without errors.
 You should run all the steps while the terminal is in app folder. i.e: `cd ansible`
+5. Github actions run by default when you push on main. There are secret variables saved on github, like dockerhub username and password, that allow to push the image on dockerhub.
+To check that everything works, go to the actions tab on the github actions, and everything should look green.
 
 ## Design decisions
 One design decision was to use Docker containers for components such as the Ansible host instead of setting up virtual machines with tools like VirtualBox. Using containers simplifies the environment setup and ensures consistency across different systems. This approach reduces the classic “it works on my machine” problem because the environment can be reproduced reliably using the same container images.
