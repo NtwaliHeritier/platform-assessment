@@ -2,56 +2,43 @@
 
 ### Running the project
 
-1. Generate ssh key
-Check if you already have an SSH key:
+1. Install community modules used in the playbooks
 ```bash
-ls ~/.ssh/id_rsa
+ansible-galaxy collection install community.general
 ```
-If the file does not exist, generate one:
+2. Build docker target
 ```bash
-ssh-keygen -t rsa -b 4096 -C "ansible-local"
+docker build -t ansible-target docker-target/
 ```
-2. Build the docker target
+3. Run the target container
 ```bash
-docker build -t ansible-target ./docker-target
-```
-3. Start the container
-```bash
-docker run -d --name ansible-target -p 2222:22 ansible-target
-```
-4. Add Your SSH Key to the Container
-```bash
-docker cp ~/.ssh/id_rsa.pub ansible-target:/home/ubuntu/.ssh/authorized_keys
-```
-Fix permissions by running the following commands:
-```bash
-docker exec -it ansible-target bash 
-chown -R ubuntu:ubuntu /home/ubuntu/.ssh 
-chmod 600 /home/ubuntu/.ssh/authorized_keys 
-exit
-```
-5. Verify SSH Access
-```bash
-ssh -p 2222 ubuntu@127.0.0.1
-```
-6. Test Ansible Connectivity
-```bash
-ansible all -m ping
-```
-Expected output:
-
-docker-target | SUCCESS => {
-    "changed": false,
-    "ping": "pong"
-}
-7. Run the Playbook
-```bash
-ansible-playbook -i inventory/hosts.yaml site.yaml
+docker run -d \
+--name ansible-target \
+--cap-add=NET_ADMIN \
+--cap-add=NET_RAW \
+-p 2222:22 \
+ansible-target
 ```
 
-### Verifying Node Exporter
-Check by running the following commands
+The container is now reachable via ssh
+The default credentials are
 ```bash
-docker exec -it ansible-target bash
-ps aux | grep node_exporter
+user: ansible
+password: ansible
+port: 2222
 ```
+and you can check connectivity by
+```bash
+ssh ansible@127.0.0.1 -p 2222
+```
+4. Run the ansible playbook
+```bash
+ansible-playbook site.yaml
+```
+5. Verify firewall and node exporter
+```bash
+ssh ansible@127.0.0.1 -p 2222
+sudo ufw status verbose
+curl localhost:9100/metrics
+```
+you should see prometheus metrics
