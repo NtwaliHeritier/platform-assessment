@@ -88,3 +88,11 @@ Visit localhost:9090
 kubectl port-forward svc/monitoring-grafana 3001:80 -n monitoring
 ```
 Visit localhost:3001, the credentials are the username and password you specified.
+8. Create dashboard and use this query
+```bash
+http_requests_total
+```
+9. For Loki, in grafana, go on the explore tab and choose loki, and put this query
+```bash
+{app="node-app"} | json
+```
